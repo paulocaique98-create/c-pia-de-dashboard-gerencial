@@ -2935,89 +2935,89 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 custom-scrollbar flex flex-col mt-2">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 custom-scrollbar flex flex-col mt-1">
           <nav className="flex-1 flex flex-col">
-            <div className="space-y-1.5">
-              <button onClick={() => handleNavigation('dashboard')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'dashboard' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Dashboard" : ""}>
-                <LayoutDashboard size={20} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Dashboard</span>}
+            <div className="space-y-1">
+              <button onClick={() => handleNavigation('dashboard')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'dashboard' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Dashboard" : ""}>
+                <LayoutDashboard size={18} className="shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium">Dashboard</span>}
               </button>
-              <button onClick={() => handleNavigation('daily')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'daily' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Desempenho Diário" : ""}>
-                <BarChart2 size={20} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Desempenho Diário</span>}
+              <button onClick={() => handleNavigation('daily')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'daily' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Desempenho Diário" : ""}>
+                <BarChart2 size={18} className="shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium">Desempenho Diário</span>}
               </button>
-              <button onClick={() => handleNavigation('funnel')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'funnel' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Funil de Vendas" : ""}>
-                <Filter size={20} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Funil de Vendas</span>}
+              <button onClick={() => handleNavigation('funnel')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'funnel' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Funil de Vendas" : ""}>
+                <Filter size={18} className="shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium">Funil de Vendas</span>}
               </button>
-              <button onClick={() => handleNavigation('metas_tracking')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'metas_tracking' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Acompanhamento de Metas" : ""}>
-                <Target size={20} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Acompanhamento de Metas</span>}
+              <button onClick={() => handleNavigation('metas_tracking')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'metas_tracking' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Acompanhamento de Metas" : ""}>
+                <Target size={18} className="shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium">Acompanhamento de Metas</span>}
               </button>
             </div>
 
             {user.role === 'ADMIN' && (
-              <div className="pt-4 mt-4 border-t border-slate-800/50 space-y-1.5">
-                {!isCollapsed && <p className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 whitespace-nowrap">Administração</p>}
+              <div className="pt-2 mt-2 border-t border-slate-800/50 space-y-1">
+                {!isCollapsed && <p className="px-4 text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1 whitespace-nowrap">Administração</p>}
                 
-                <button onClick={() => handleNavigation('admin-messages')} className={`w-full relative flex items-center ${isCollapsed ? 'justify-center px-2 mt-2' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'admin-messages' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Caixa de Mensagens" : ""}>
+                <button onClick={() => handleNavigation('admin-messages')} className={`w-full relative flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'admin-messages' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Caixa de Mensagens" : ""}>
                   <div className="relative">
-                    <MessageSquare size={20} className="shrink-0" />
+                    <MessageSquare size={18} className="shrink-0" />
                     {unreadMessagesCount > 0 && isCollapsed && (
-                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900"></span>
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-slate-900"></span>
                     )}
                   </div>
                   {!isCollapsed && (
                     <div className="flex items-center justify-between flex-1">
-                      <span className="whitespace-nowrap font-medium text-sm">Caixa de Mensagens</span>
+                      <span className="whitespace-nowrap font-medium">Caixa de Mensagens</span>
                       {unreadMessagesCount > 0 && (
-                        <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{unreadMessagesCount}</span>
+                        <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{unreadMessagesCount}</span>
                       )}
                     </div>
                   )}
                 </button>
 
-                <button onClick={() => handleNavigation('cadastros')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2 mt-1' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'cadastros' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Menu de Cadastros" : ""}>
-                  <FolderPlus size={20} className="shrink-0" />
-                  {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Cadastros</span>}
+                <button onClick={() => handleNavigation('cadastros')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'cadastros' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Menu de Cadastros" : ""}>
+                  <FolderPlus size={18} className="shrink-0" />
+                  {!isCollapsed && <span className="whitespace-nowrap font-medium">Cadastros</span>}
                 </button>
                 
-                <button onClick={() => { setEditingId(null); handleNavigation('insert'); }} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2 mt-1' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'insert' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Inserir Dados" : ""}>
-                  <ListPlus size={20} className="shrink-0" />
-                  {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Inserir Dados</span>}
+                <button onClick={() => { setEditingId(null); handleNavigation('insert'); }} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'insert' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Inserir Dados" : ""}>
+                  <ListPlus size={18} className="shrink-0" />
+                  {!isCollapsed && <span className="whitespace-nowrap font-medium">Inserir Dados</span>}
                 </button>
               </div>
             )}
 
-            <div className="mt-auto pt-4 space-y-1.5">
+            <div className="mt-auto pt-2 space-y-1">
               {/* Notificações desativadas por enquanto */}
-              <button onClick={() => handleNavigation('settings')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'settings' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Configurações" : ""}>
-                <SettingsIcon size={20} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Configurações e Perfil</span>}
+              <button onClick={() => handleNavigation('settings')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'settings' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Configurações" : ""}>
+                <SettingsIcon size={18} className="shrink-0" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium">Configurações e Perfil</span>}
               </button>
             </div>
           </nav>
         </div>
 
-        <div className="p-4 border-t border-slate-800 shrink-0 bg-slate-950/50 flex flex-col gap-3">
+        <div className="p-3 border-t border-slate-800 shrink-0 bg-slate-950/50 flex flex-col gap-2">
           {!isCollapsed && (
             <div className="flex items-center justify-between px-3 py-2 bg-slate-900/50 rounded-lg border border-slate-800/80">
-              <span className="text-xs text-slate-400 font-medium">Acesso</span>
-              <span className={`inline-block px-2 py-0.5 text-[10px] rounded-full font-bold uppercase tracking-wider whitespace-nowrap ${user.role === 'ADMIN' ? 'bg-purple-900/80 text-purple-300 border border-purple-700' : 'bg-blue-900/80 text-blue-300 border border-blue-700'}`}>
+              <span className="text-[10px] text-slate-400 font-medium">Acesso</span>
+              <span className={`inline-block px-2 py-0.5 text-[8px] rounded-full font-bold uppercase tracking-wider whitespace-nowrap ${user.role === 'ADMIN' ? 'bg-purple-900/80 text-purple-300 border border-purple-700' : 'bg-blue-900/80 text-blue-300 border border-blue-700'}`}>
                 {user.role}
               </span>
             </div>
           )}
           {isCollapsed && (
             <div className="flex justify-center pb-1 border-b border-slate-800/80 mb-1">
-              <span className={`inline-block px-1.5 py-0.5 text-[8px] rounded font-bold uppercase tracking-wider ${user.role === 'ADMIN' ? 'bg-purple-900/80 text-purple-300 border border-purple-700' : 'bg-blue-900/80 text-blue-300 border border-blue-700'}`} title={`Acesso: ${user.role}`}>
+              <span className={`inline-block px-1.5 py-0.5 text-[7px] rounded font-bold uppercase tracking-wider ${user.role === 'ADMIN' ? 'bg-purple-900/80 text-purple-300 border border-purple-700' : 'bg-blue-900/80 text-blue-300 border border-blue-700'}`} title={`Acesso: ${user.role}`}>
                 {user.role.substring(0, 3)}
               </span>
             </div>
           )}
-          <button onClick={onLogout} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2.5 text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors`} title={isCollapsed ? "Sair do Sistema" : ""}>
-            <LogOut size={20} className="shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Sair do Sistema</span>}
+          <button onClick={onLogout} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors text-xs`} title={isCollapsed ? "Sair do Sistema" : ""}>
+            <LogOut size={18} className="shrink-0" />
+            {!isCollapsed && <span className="whitespace-nowrap font-medium">Sair do Sistema</span>}
           </button>
         </div>
       </aside>
