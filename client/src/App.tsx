@@ -3058,7 +3058,11 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
 // ==========================================
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  // Inicializar currentUser a partir do localStorage se disponível
+  const [currentUser, setCurrentUser] = useState<any>(() => {
+    const savedUser = localStorage.getItem('impacto_current_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [operatorData, setOperatorData] = useState(initialOperatorData);
   const [registeredOperators, setRegisteredOperators] = useState(initialRegisteredOperators);
   const [systemUsers, setSystemUsers] = useState(initialSystemUsers);
@@ -3081,7 +3085,19 @@ export default function App() {
     return false;
   };
 
-  const handleLogout = () => setCurrentUser(null);
+  // Salvar usuário no localStorage sempre que mudar
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('impacto_current_user', JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem('impacto_current_user');
+    }
+  }, [currentUser]);
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('impacto_current_user');
+  };
 
   if (!currentUser) {
     return <LoginScreen onLogin={handleLogin} />;
