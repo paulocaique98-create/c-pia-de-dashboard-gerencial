@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   PlusCircle, 
@@ -27,22 +27,16 @@ import {
   BarChart2, 
   FolderPlus,
   Shield,
-  Key,
-  Layers,
   Settings as SettingsIcon,
   MessageSquare,
   Send,
   Camera,
-  CheckCircle2,
-  Info,
-  XCircle,
   User,
   Lock,
   Download,
   Plug,
   Link2,
-  Webhook,
-  Bell
+  Webhook
 } from 'lucide-react';
 
 // --- COMPONENTES AUXILIARES ---
@@ -3072,13 +3066,7 @@ export default function App() {
   const [metas, setMetas] = useState(initialMetas);
   const [chatMessages, setChatMessages] = useState(initialChatMessages);
   const [notifications, setNotifications] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [toasts, setToasts] = useState<any[]>([]);
-
-  const showToast = (message: any, type: string = 'info', actions: any = null) => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type, actions }]);
-  };
 
   const removeToast = (id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id));

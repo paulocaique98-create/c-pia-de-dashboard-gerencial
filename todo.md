@@ -7,6 +7,9 @@
 - [x] Adição de @ts-nocheck para desabilitar verificação de tipo
 - [x] Correção do erro em storageProxy.ts
 - [x] Todos os erros TypeScript resolvidos
+- [x] Remover imports não utilizados (useRef, Key, Layers, CheckCircle2, Info, XCircle, Bell)
+- [x] Remover função showToast não utilizada
+- [x] Remover variável isLoading não utilizada do App principal
 
 ## Features (Inherited from Source)
 - [x] CRM/SDR dashboard com interface de login
