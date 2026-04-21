@@ -13,6 +13,7 @@
 - [x] Implementar persistência de sessão com localStorage
 - [x] Criar testes para validar persistência de sessão (6 testes passando)
 - [x] Corrigir scroll indesejado no menu ADM em notebooks de 14 polegadas
+- [x] Adicionar animações de transição suaves ao expandir e recolher o menu
 
 ## Features (Inherited from Source)
 - [x] CRM/SDR dashboard com interface de login

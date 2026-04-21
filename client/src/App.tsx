@@ -2906,27 +2906,27 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
     <div className="flex h-screen bg-slate-100 overflow-hidden relative">
       {isMobileMenuOpen && <div className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />}
 
-      <aside className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-slate-900 text-white transform transition-all duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
+      <aside className={`fixed inset-y-0 left-0 z-30 flex flex-col bg-slate-900 text-white transform transition-all duration-400 ease-in-out lg:translate-x-0 lg:static lg:inset-0
         ${isMobileMenuOpen ? 'translate-x-0 w-64' : '-translate-x-full'}
         ${isCollapsed ? 'lg:w-20' : 'lg:w-64'}
       `}>
-        <div className={`flex items-center h-16 bg-slate-950 shrink-0 transition-all ${isCollapsed ? 'justify-center px-0' : 'justify-between px-6'}`}>
+        <div className={`flex items-center h-16 bg-slate-950 shrink-0 transition-all duration-300 ${isCollapsed ? 'justify-center px-0' : 'justify-between px-6'}`}>
           {!isCollapsed && (
-            <div className="flex items-center gap-2">
-              <ImpactoLogo className="w-8 h-8 text-blue-600 shrink-0" />
-              <div className="flex flex-col">
+            <div className="flex items-center gap-2 menu-text-transition">
+              <ImpactoLogo className="w-8 h-8 text-blue-600 shrink-0 menu-icon-transition" />
+              <div className="flex flex-col menu-text-transition">
                 <span className="text-white font-extrabold text-2xl lowercase leading-none tracking-tight">impacto</span>
                 <span className="text-slate-400 font-medium text-[10px] leading-none text-right mt-0.5">Tecnologia</span>
               </div>
             </div>
           )}
           {isCollapsed && (
-            <button className="hidden lg:block text-slate-400 hover:text-white" onClick={() => setIsCollapsed(false)} title="Expandir Menu">
+            <button className="hidden lg:block text-slate-400 hover:text-white menu-icon-transition" onClick={() => setIsCollapsed(false)} title="Expandir Menu">
               <Menu size={24} />
             </button>
           )}
           {!isCollapsed && (
-            <button className="hidden lg:block text-slate-400 hover:text-white" onClick={() => setIsCollapsed(true)} title="Recolher Menu">
+            <button className="hidden lg:block text-slate-400 hover:text-white menu-icon-transition" onClick={() => setIsCollapsed(true)} title="Recolher Menu">
               <Menu size={20} />
             </button>
           )}
@@ -2938,21 +2938,21 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 custom-scrollbar flex flex-col mt-1">
           <nav className="flex-1 flex flex-col">
             <div className="space-y-1">
-              <button onClick={() => handleNavigation('dashboard')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'dashboard' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Dashboard" : ""}>
-                <LayoutDashboard size={18} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium">Dashboard</span>}
+              <button onClick={() => handleNavigation('dashboard')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'dashboard' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Dashboard" : ""}>
+                <LayoutDashboard size={18} className="shrink-0 menu-icon-transition" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Dashboard</span>}
               </button>
-              <button onClick={() => handleNavigation('daily')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'daily' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Desempenho Diário" : ""}>
-                <BarChart2 size={18} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium">Desempenho Diário</span>}
+              <button onClick={() => handleNavigation('daily')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'daily' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Desempenho Diário" : ""}>
+                <BarChart2 size={18} className="shrink-0 menu-icon-transition" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Desempenho Diário</span>}
               </button>
-              <button onClick={() => handleNavigation('funnel')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'funnel' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Funil de Vendas" : ""}>
-                <Filter size={18} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium">Funil de Vendas</span>}
+              <button onClick={() => handleNavigation('funnel')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'funnel' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Funil de Vendas" : ""}>
+                <Filter size={18} className="shrink-0 menu-icon-transition" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Funil de Vendas</span>}
               </button>
-              <button onClick={() => handleNavigation('metas_tracking')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'metas_tracking' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Acompanhamento de Metas" : ""}>
-                <Target size={18} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium">Acompanhamento de Metas</span>}
+              <button onClick={() => handleNavigation('metas_tracking')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'metas_tracking' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Acompanhamento de Metas" : ""}>
+                <Target size={18} className="shrink-0 menu-icon-transition" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Acompanhamento de Metas</span>}
               </button>
             </div>
 
@@ -2960,40 +2960,40 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
               <div className="pt-2 mt-2 border-t border-slate-800/50 space-y-1">
                 {!isCollapsed && <p className="px-4 text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1 whitespace-nowrap">Administração</p>}
                 
-                <button onClick={() => handleNavigation('admin-messages')} className={`w-full relative flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'admin-messages' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Caixa de Mensagens" : ""}>
+                <button onClick={() => handleNavigation('admin-messages')} className={`w-full relative flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'admin-messages' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Caixa de Mensagens" : ""}>
                   <div className="relative">
-                    <MessageSquare size={18} className="shrink-0" />
+                    <MessageSquare size={18} className="shrink-0 menu-icon-transition" />
                     {unreadMessagesCount > 0 && isCollapsed && (
-                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-slate-900"></span>
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-slate-900 transition-all duration-300"></span>
                     )}
                   </div>
                   {!isCollapsed && (
-                    <div className="flex items-center justify-between flex-1">
+                    <div className="flex items-center justify-between flex-1 menu-text-transition">
                       <span className="whitespace-nowrap font-medium">Caixa de Mensagens</span>
                       {unreadMessagesCount > 0 && (
-                        <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{unreadMessagesCount}</span>
+                        <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full transition-all duration-300">{unreadMessagesCount}</span>
                       )}
                     </div>
                   )}
                 </button>
 
-                <button onClick={() => handleNavigation('cadastros')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'cadastros' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Menu de Cadastros" : ""}>
-                  <FolderPlus size={18} className="shrink-0" />
-                  {!isCollapsed && <span className="whitespace-nowrap font-medium">Cadastros</span>}
+                <button onClick={() => handleNavigation('cadastros')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'cadastros' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Menu de Cadastros" : ""}>
+                  <FolderPlus size={18} className="shrink-0 menu-icon-transition" />
+                  {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Cadastros</span>}
                 </button>
                 
-                <button onClick={() => { setEditingId(null); handleNavigation('insert'); }} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'insert' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Inserir Dados" : ""}>
-                  <ListPlus size={18} className="shrink-0" />
-                  {!isCollapsed && <span className="whitespace-nowrap font-medium">Inserir Dados</span>}
+                <button onClick={() => { setEditingId(null); handleNavigation('insert'); }} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'insert' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Inserir Dados" : ""}>
+                  <ListPlus size={18} className="shrink-0 menu-icon-transition" />
+                  {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Inserir Dados</span>}
                 </button>
               </div>
             )}
 
             <div className="mt-auto pt-2 space-y-1">
               {/* Notificações desativadas por enquanto */}
-              <button onClick={() => handleNavigation('settings')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-colors text-xs ${currentView === 'settings' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Configurações" : ""}>
-                <SettingsIcon size={18} className="shrink-0" />
-                {!isCollapsed && <span className="whitespace-nowrap font-medium">Configurações e Perfil</span>}
+              <button onClick={() => handleNavigation('settings')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 rounded-lg transition-all duration-300 text-xs menu-transition ${currentView === 'settings' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Configurações" : ""}>
+                <SettingsIcon size={18} className="shrink-0 menu-icon-transition" />
+                {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Configurações e Perfil</span>}
               </button>
             </div>
           </nav>
@@ -3015,9 +3015,9 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
               </span>
             </div>
           )}
-          <button onClick={onLogout} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors text-xs`} title={isCollapsed ? "Sair do Sistema" : ""}>
-            <LogOut size={18} className="shrink-0" />
-            {!isCollapsed && <span className="whitespace-nowrap font-medium">Sair do Sistema</span>}
+          <button onClick={onLogout} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-2 text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-all duration-300 text-xs menu-transition`} title={isCollapsed ? "Sair do Sistema" : ""}>
+            <LogOut size={18} className="shrink-0 menu-icon-transition" />
+            {!isCollapsed && <span className="whitespace-nowrap font-medium menu-text-transition">Sair do Sistema</span>}
           </button>
         </div>
       </aside>
