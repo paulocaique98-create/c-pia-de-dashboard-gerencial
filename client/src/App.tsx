@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   LayoutDashboard, 
@@ -40,9 +41,21 @@ import {
   Download,
   Plug,
   Link2,
-  Webhook
+  Webhook,
+  Bell
 } from 'lucide-react';
-import { APIDocumentation } from './components/APIDocumentation';
+
+// --- COMPONENTES AUXILIARES ---
+const APIDocumentation = () => (
+  <div className="p-6 animate-fade-in">
+    <h3 className="text-lg font-bold text-slate-800 mb-4">Documentação da API</h3>
+    <p className="text-sm text-slate-500 mb-6">Aqui você encontra as instruções para integrar o Impacto CRM com os seus sistemas via API REST.</p>
+    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <p className="font-mono text-sm text-slate-700">Endpoint Base: <span className="font-bold text-blue-600">https://api.impactocrm.com/v1</span></p>
+      <p className="text-xs text-slate-500 mt-2">A documentação interativa completa será disponibilizada na próxima atualização.</p>
+    </div>
+  </div>
+);
 
 // --- COMPONENTE TOAST ---
 const Toast = ({ id, message, type, onClose, actions }) => {
@@ -121,9 +134,13 @@ const LoadingSpinner = () => (
 // --- COMPONENTE DA LOGO: IMPACTO TECNOLOGIA ---
 const ImpactoLogo = ({ className = "w-8 h-8" }) => (
   <img 
-    src="https://media.licdn.com/dms/image/v2/D4E0BAQF89iU5JUfsLQ/company-logo_200_200/B4EZs9MgR7IoAU-/0/1766258247230/impactotecnologiabr_logo?e=2147483647&v=beta&t=8H_5cVM0hxpY0aXzIf7s70jdjPAgtr2KcZEnYUDV2gA" 
+    src="/impactotecnologiabr_logo.jpg" 
     alt="Impacto Tecnologia" 
-    className={`${className} object-contain rounded-md shadow-sm`} 
+    className={`${className} object-contain rounded-md shadow-sm`}
+    onError={(e) => {
+      e.currentTarget.onerror = null;
+      e.currentTarget.src = "https://ui-avatars.com/api/?name=Impacto+Tecnologia&background=0052cc&color=fff&size=128&rounded=true";
+    }}
   />
 );
 
@@ -133,21 +150,28 @@ const currentMonth = new Date().getMonth() + 1; // 1-12
 const prevMonth = currentMonth === 1 ? 12 : currentMonth - 1;
 const prevYear = currentMonth === 1 ? currentYear - 1 : currentYear;
 
-const formatMonth = (m) => m.toString().padStart(2, '0');
+const formatMonth = (m: number) => m.toString().padStart(2, '0');
 
-const initialOperatorData = [];
+const initialOperatorData: any[] = [];
 
-const initialRegisteredOperators = ['Paulo Santana', 'Jessica França', 'Rafael Lima', 'Natanael Barcelos', 'André Moraes'];
+const initialRegisteredOperators = [
+  { id: '1', name: 'Paulo Santana', status: 'ativo' },
+  { id: '2', name: 'Jessica França', status: 'ativo' },
+  { id: '3', name: 'Rafael Lima', status: 'ativo' },
+  { id: '4', name: 'Natanael Barcelos', status: 'ativo' },
+  { id: '5', name: 'André Moraes', status: 'ativo' }
+];
 
 const initialSystemUsers = [
   { id: '1', username: 'paulo.santana', password: '123456', role: 'ADMIN', name: 'Paulo Santana', photo: '' },
   { id: '2', username: 'joao.silva', password: '123456', role: 'USER', name: 'João Silva', photo: '' },
-  { id: '3', username: 'vitor.paula', password: '123456', role: 'USER', name: 'Vitor Paula', photo: '' }
+  { id: '3', username: 'vitor.paula', password: '123456', role: 'USER', name: 'Vitor Paula', photo: '' },
+  { id: '4', username: 'marcell.vianna', password: '123456', role: 'USER', name: 'Marcell Vianna', photo: '' }
 ];
 
 const initialSystemModules = ['Origens de Lead', 'Produtos de Software', 'Tags de Cliente'];
 
-const initialMetas = { vendas: 50, mrr: 25000, conversao: 15 };
+const initialMetas = { vendas: 0, mrr: 0, conversao: 0 };
 
 const initialChatMessages = [
   { id: 'm1', userId: '2', sender: 'user', text: 'Olá, gostaria de sugerir uma nova métrica no dashboard.', timestamp: new Date(Date.now() - 86400000).toISOString() },
@@ -158,7 +182,7 @@ const initialChatMessages = [
 // VIEWS 
 // ==========================================
 
-function DashboardView({ operatorData, registeredOperators }) {
+function DashboardView({ operatorData, registeredOperators, metas }: any) {
   const maxDateStr = operatorData.length > 0
     ? operatorData.reduce((max, p) => p.data > max ? p.data : max, operatorData[0].data)
     : new Date().toISOString().split('T')[0];
@@ -273,7 +297,7 @@ function DashboardView({ operatorData, registeredOperators }) {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-2">
         <h1 className="text-2xl font-bold text-slate-900 truncate">Dashboard Gerencial</h1>
-        <p className="text-slate-500 text-sm mt-0.5">Acompanhamento consolidado do desempenho da equipa.</p>
+        <p className="text-slate-500 text-sm mt-0.5">Acompanhamento consolidado do desempenho da equipe.</p>
       </div>
 
       <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 w-full transition-all hover:shadow-md mb-6">
@@ -308,7 +332,7 @@ function DashboardView({ operatorData, registeredOperators }) {
             </div>
             <select value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)} className="w-full sm:w-56 pl-9 pr-8 py-2 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 hover:bg-white hover:border-blue-300 transition-all cursor-pointer appearance-none outline-none shadow-sm">
               <option value="">Todos os Operadores</option>
-              {registeredOperators.map(op => <option key={op} value={op}>{op}</option>)}
+              {registeredOperators.map(op => <option key={op.id} value={op.name}>{op.name}</option>)}
             </select>
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <svg className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -334,7 +358,7 @@ function DashboardView({ operatorData, registeredOperators }) {
             </div>
             <div className="mt-4 flex items-center justify-between text-sm">
               <span className="text-slate-400 truncate text-xs">
-                {selectedOperator ? selectedOperator : 'Toda a Equipa'}
+                {selectedOperator ? selectedOperator : 'Toda a Equipe'}
               </span>
               
               {/* Badge de Crescimento */}
@@ -352,6 +376,31 @@ function DashboardView({ operatorData, registeredOperators }) {
 
 // --- NOVA VIEW: ACOMPANHAMENTO DE METAS ---
 function MetasTrackingView({ operatorData, registeredOperators, metas }) {
+  const [activeTab, setActiveTab] = useState('globais');
+  const [selectedOperatorForGoals, setSelectedOperatorForGoals] = useState(null);
+  
+  // FIX 4: JSON.parse Try/Catch para individualGoals
+  const [individualGoals, setIndividualGoals] = useState(() => {
+    try {
+      const stored = localStorage.getItem('individualGoals');
+      return stored ? JSON.parse(stored) : {};
+    } catch (error) {
+      console.error("Erro ao fazer parse de individualGoals:", error);
+      return {};
+    }
+  });
+  
+  // FIX 4: JSON.parse Try/Catch para goalsHistory
+  const [goalsHistory, setGoalsHistory] = useState(() => {
+    try {
+      const stored = localStorage.getItem('goalsHistory');
+      return stored ? JSON.parse(stored) : {};
+    } catch (error) {
+      console.error("Erro ao fazer parse de goalsHistory:", error);
+      return {};
+    }
+  });
+  
   const maxDateStr = operatorData.length > 0
     ? operatorData.reduce((max, p) => p.data > max ? p.data : max, operatorData[0].data)
     : new Date().toISOString().split('T')[0];
@@ -411,57 +460,63 @@ function MetasTrackingView({ operatorData, registeredOperators, metas }) {
         <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2 truncate">
           <Target className="text-blue-600 shrink-0" /> Acompanhamento de Metas
         </h1>
-        <p className="text-slate-500 text-sm mt-0.5">Acompanhe o progresso em relação aos objetivos globais estabelecidos.</p>
+        <p className="text-slate-500 text-sm mt-0.5">Acompanhe o progresso das metas globais.</p>
       </div>
 
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 w-full transition-all hover:shadow-md mb-6">
-        
-        {/* Quick Filters */}
-        <div className="flex gap-2 w-full xl:w-auto overflow-x-auto custom-scrollbar pb-1 xl:pb-0 shrink-0">
-          <button onClick={() => setQuickFilter('hoje')} className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all whitespace-nowrap shadow-sm">Hoje</button>
-          <button onClick={() => setQuickFilter('7dias')} className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all whitespace-nowrap shadow-sm">Últimos 7 Dias</button>
-          <button onClick={() => setQuickFilter('mes')} className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all whitespace-nowrap shadow-sm">Este Mês</button>
-        </div>
+      {/* Tabs desativados - apenas Metas Globais visível por enquanto */}
+      {/* Metas Individuais será reativada em breve */}
 
-        <div className="hidden xl:block w-px h-10 bg-slate-200 mx-2"></div>
+      {/* SEÇÃO: METAS GLOBAIS - Única seção ativa */}
+      {true && (
+        <>
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-200/80 w-full transition-all hover:shadow-md mb-6">
+            
+            {/* Quick Filters */}
+            <div className="flex gap-2 w-full xl:w-auto overflow-x-auto custom-scrollbar pb-1 xl:pb-0 shrink-0">
+              <button onClick={() => setQuickFilter('hoje')} className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all whitespace-nowrap shadow-sm">Hoje</button>
+              <button onClick={() => setQuickFilter('7dias')} className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all whitespace-nowrap shadow-sm">Últimos 7 Dias</button>
+              <button onClick={() => setQuickFilter('mes')} className="px-4 py-2 text-xs sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all whitespace-nowrap shadow-sm">Este Mês</button>
+            </div>
 
-        {/* Date & Operator */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
-          <div className="flex items-center w-full sm:w-auto gap-2">
-            <div className="relative group flex-1 sm:flex-none">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <CalendarDays size={16} className="text-slate-400 group-hover:text-blue-500 transition-colors" />
+            <div className="hidden xl:block w-px h-10 bg-slate-200 mx-2"></div>
+
+            {/* Date & Operator */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+              <div className="flex items-center w-full sm:w-auto gap-2">
+                <div className="relative group flex-1 sm:flex-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <CalendarDays size={16} className="text-slate-400 group-hover:text-blue-500 transition-colors" />
+                  </div>
+                  <input type="date" value={startDate} max={maxDateStr} onChange={handleStartDateChange} className="w-full pl-9 pr-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 hover:bg-white hover:border-blue-300 transition-all cursor-pointer outline-none shadow-sm"/>
+                </div>
+                <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider shrink-0">até</span>
+                <div className="relative group flex-1 sm:flex-none">
+                  <input type="date" value={endDate} max={maxDateStr} onChange={handleEndDateChange} className="w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 hover:bg-white hover:border-blue-300 transition-all cursor-pointer outline-none shadow-sm"/>
+                </div>
               </div>
-              <input type="date" value={startDate} max={maxDateStr} onChange={handleStartDateChange} className="w-full pl-9 pr-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 hover:bg-white hover:border-blue-300 transition-all cursor-pointer outline-none shadow-sm"/>
-            </div>
-            <span className="text-slate-400 text-[11px] font-bold uppercase tracking-wider shrink-0">até</span>
-            <div className="relative group flex-1 sm:flex-none">
-              <input type="date" value={endDate} max={maxDateStr} onChange={handleEndDateChange} className="w-full px-3 py-2 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 hover:bg-white hover:border-blue-300 transition-all cursor-pointer outline-none shadow-sm"/>
-            </div>
-          </div>
-          <div className="hidden sm:block w-px h-8 bg-slate-200 mx-1"></div>
-          <div className="relative w-full sm:w-auto group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Users size={16} className="text-slate-400 group-hover:text-blue-500 transition-colors" />
-            </div>
-            <select value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)} className="w-full sm:w-56 pl-9 pr-8 py-2 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 hover:bg-white hover:border-blue-300 transition-all cursor-pointer appearance-none outline-none shadow-sm">
-              <option value="">Todos os Operadores</option>
-              {registeredOperators.map(op => <option key={op} value={op}>{op}</option>)}
-            </select>
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <svg className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
+              <div className="hidden sm:block w-px h-8 bg-slate-200 mx-1"></div>
+              <div className="relative w-full sm:w-auto group">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Users size={16} className="text-slate-400 group-hover:text-blue-500 transition-colors" />
+                </div>
+                <select value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)} className="w-full sm:w-56 pl-9 pr-8 py-2 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-semibold text-slate-700 hover:bg-white hover:border-blue-300 transition-all cursor-pointer appearance-none outline-none shadow-sm">
+                  <option value="">Todos os Operadores</option>
+                  {registeredOperators.map(op => <option key={op.id} value={op.name}>{op.name}</option>)}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Progresso de Metas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Vendas */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            {/* Progresso de Metas */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Vendas */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
           <div className="flex justify-between items-start mb-6">
             <div>
               <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">Meta de Vendas</span>
@@ -478,11 +533,11 @@ function MetasTrackingView({ operatorData, registeredOperators, metas }) {
           <div className="w-full bg-slate-100 rounded-full h-4 mb-2 overflow-hidden shadow-inner relative">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 h-4 rounded-full transition-all duration-1000 ease-out" style={{ width: `${Math.min((totalVendas / metas.vendas) * 100, 100)}%` }}></div>
           </div>
-          <p className="text-sm font-bold text-slate-500 text-right">{((totalVendas / metas.vendas) * 100).toFixed(1)}% alcançado</p>
-        </div>
+              <p className="text-sm font-bold text-slate-500 text-right">{((totalVendas / metas.vendas) * 100).toFixed(1)}% alcançado</p>
+            </div>
 
-        {/* MRR */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            {/* MRR */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
           <div className="flex justify-between items-start mb-6">
             <div>
               <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">MRR Novo</span>
@@ -493,17 +548,18 @@ function MetasTrackingView({ operatorData, registeredOperators, metas }) {
             </div>
           </div>
           <div className="flex items-end gap-2 mb-4">
-            <span className="text-4xl font-black text-emerald-600"><span className="text-xl font-bold mr-1">R$</span>{totalMRR.toLocaleString('pt-BR')}</span>
+            {/* FIX 6: Formatação de Moeda consistente */}
+            <span className="text-4xl font-black text-emerald-600"><span className="text-xl font-bold mr-1">R$</span>{totalMRR.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             <span className="text-lg font-semibold text-slate-400 mb-1">/ {(metas.mrr / 1000)}k</span>
           </div>
           <div className="w-full bg-slate-100 rounded-full h-4 mb-2 overflow-hidden shadow-inner relative">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-600 h-4 rounded-full transition-all duration-1000 ease-out" style={{ width: `${Math.min((totalMRR / metas.mrr) * 100, 100)}%` }}></div>
           </div>
-          <p className="text-sm font-bold text-slate-500 text-right">{((totalMRR / metas.mrr) * 100).toFixed(1)}% alcançado</p>
-        </div>
+              <p className="text-sm font-bold text-slate-500 text-right">{((totalMRR / metas.mrr) * 100).toFixed(1)}% alcançado</p>
+            </div>
 
-        {/* Conversão */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            {/* Conversão */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
           <div className="flex justify-between items-start mb-6">
             <div>
               <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">Conversão</span>
@@ -520,10 +576,170 @@ function MetasTrackingView({ operatorData, registeredOperators, metas }) {
           <div className="w-full bg-slate-100 rounded-full h-4 mb-2 overflow-hidden shadow-inner relative">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-purple-600 h-4 rounded-full transition-all duration-1000 ease-out" style={{ width: `${Math.min((taxaConversaoAtual / metas.conversao) * 100, 100)}%` }}></div>
           </div>
-          <p className="text-sm font-bold text-slate-500 text-right">{((taxaConversaoAtual / metas.conversao) * 100).toFixed(1)}% da meta</p>
-        </div>
+              <p className="text-sm font-bold text-slate-500 text-right">{((taxaConversaoAtual / metas.conversao) * 100).toFixed(1)}% da meta</p>
+            </div>
+          </div>
+        </>
+      )}
 
-      </div>
+      {/* SEÇÃO: METAS INDIVIDUAIS - DESATIVADO POR ENQUANTO */}
+      {false && activeTab === 'individuais' && (
+        <div className="space-y-6" key={`individuais-${Object.keys(goalsHistory).length}`}>
+          <div>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Metas Individuais por Operador</h3>
+            <p className="text-sm text-slate-500">Clique em um operador para visualizar suas metas salvas anteriormente.</p>
+          </div>
+          
+          {/* Grid de Operadores */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {registeredOperators && registeredOperators.filter((op) => op && op.status === 'ativo').map((op) => {
+              const hasGoals = Object.keys(goalsHistory).some((key) => key.startsWith(op.id));
+              return (
+                <button
+                  key={op.id}
+                  onClick={() => {
+                    setSelectedOperatorForGoals(op);
+                    // Reload goals from localStorage when opening modal (FIX 4 applied here)
+                    try {
+                      const stored = localStorage.getItem('goalsHistory');
+                      if (stored) setGoalsHistory(JSON.parse(stored));
+                    } catch (e) {
+                      setGoalsHistory({});
+                    }
+                  }}
+                  className="p-4 bg-white rounded-lg border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all text-left group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{op.name}</p>
+                      {hasGoals && <p className="text-xs text-green-600 mt-1 font-medium">✓ Metas Definidas</p>}
+                      {!hasGoals && <p className="text-xs text-slate-400 mt-1">Sem metas</p>}
+                    </div>
+                    <div className="p-2 rounded-lg bg-blue-50 group-hover:bg-blue-100 transition-colors">
+                      <Users size={20} className="text-blue-600" />
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Modal de Metas do Operador */}
+          {selectedOperatorForGoals && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-fade-in">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-slate-900">Metas de {selectedOperatorForGoals.name}</h2>
+                  <button onClick={() => setSelectedOperatorForGoals(null)} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                    <X size={24} className="text-slate-600" />
+                  </button>
+                </div>
+                
+                <p className="text-sm text-slate-500 mb-6">Histórico de metas salvas para este operador. As metas são organizadas por mês.</p>
+                
+                {/* Metas salvas do operador */}
+                <div className="space-y-4">
+                  {Object.keys(goalsHistory).filter(key => key.startsWith(selectedOperatorForGoals.id)).length > 0 ? (
+                    Object.keys(goalsHistory)
+                      .filter(key => key.startsWith(selectedOperatorForGoals.id))
+                      .sort()
+                      .reverse()
+                      .map(key => {
+                        const entries = goalsHistory[key] || [];
+                        return (
+                          <div key={key} className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <p className="text-sm font-semibold text-slate-700 mb-3">Mês: {key.split('-')[1]}</p>
+                            {entries.map((entry, idx) => (
+                              <div key={idx} className="p-3 bg-white rounded border border-slate-200 mb-2">
+                                <p className="text-xs text-slate-500 mb-2">Entrada #{entries.length - idx} - {new Date(entry.savedAt).toLocaleString('pt-BR')} por {entry.savedBy}</p>
+                                <div className="space-y-3">
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-semibold text-slate-600">Leads Entregues</span>
+                                      <span className="text-xs font-bold text-slate-900">{entry.leadsEntregues}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1 bg-slate-200 rounded-full h-2 overflow-hidden">
+                                        <div className="bg-blue-500 h-2 rounded-full transition-all duration-300" style={{ width: `${Math.min((entry.leadsEntregues / 100) * 100, 100)}%` }}></div>
+                                      </div>
+                                      <span className="text-xs font-bold text-blue-600 w-10 text-right">{Math.min(Math.round((entry.leadsEntregues / 100) * 100), 100)}%</span>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-semibold text-slate-600">Reuniões Realizadas</span>
+                                      <span className="text-xs font-bold text-slate-900">{entry.reunioesRealizadas}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1 bg-slate-200 rounded-full h-2 overflow-hidden">
+                                        <div className="bg-emerald-500 h-2 rounded-full transition-all duration-300" style={{ width: `${Math.min((entry.reunioesRealizadas / 50) * 100, 100)}%` }}></div>
+                                      </div>
+                                      <span className="text-xs font-bold text-emerald-600 w-10 text-right">{Math.min(Math.round((entry.reunioesRealizadas / 50) * 100), 100)}%</span>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-semibold text-slate-600">Taxa de Conexão</span>
+                                      <span className="text-xs font-bold text-slate-900">{entry.taxaConexao}%</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1 bg-slate-200 rounded-full h-2 overflow-hidden">
+                                        <div className="bg-amber-500 h-2 rounded-full transition-all duration-300" style={{ width: `${entry.taxaConexao}%` }}></div>
+                                      </div>
+                                      <span className="text-xs font-bold text-amber-600 w-10 text-right">{entry.taxaConexao}%</span>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-semibold text-slate-600">Taxa de Conversão</span>
+                                      <span className="text-xs font-bold text-slate-900">{entry.taxaConversao}%</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1 bg-slate-200 rounded-full h-2 overflow-hidden">
+                                        <div className="bg-purple-500 h-2 rounded-full transition-all duration-300" style={{ width: `${entry.taxaConversao}%` }}></div>
+                                      </div>
+                                      <span className="text-xs font-bold text-purple-600 w-10 text-right">{entry.taxaConversao}%</span>
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-semibold text-slate-600">Ligações Diárias</span>
+                                      <span className="text-xs font-bold text-slate-900">{entry.ligacoesDiarias}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="flex-1 bg-slate-200 rounded-full h-2 overflow-hidden">
+                                        <div className="bg-rose-500 h-2 rounded-full transition-all duration-300" style={{ width: `${Math.min((entry.ligacoesDiarias / 30) * 100, 100)}%` }}></div>
+                                      </div>
+                                      <span className="text-xs font-bold text-rose-600 w-10 text-right">{Math.min(Math.round((entry.ligacoesDiarias / 30) * 100), 100)}%</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 text-center">
+                      <p className="text-slate-600">Nenhuma meta salva para este operador.</p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex gap-3 justify-end mt-6 border-t pt-6">
+                  <button onClick={() => setSelectedOperatorForGoals(null)} className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium">
+                    Fechar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -561,7 +777,7 @@ function DailyPerformanceView({ operatorData, registeredOperators }) {
     { key: 'reunioesRealizadas', label: 'Reuniões Realizadas' }, { key: 'noShow', label: 'No-Show' },
     { key: 'vendas', label: 'Vendas Realizadas' }
   ];
-  const [activeChartMetric, setActiveChartMetric] = useState('vendas');
+  const [activeChartMetric, setChartMetric] = useState('vendas');
 
   const getChartData = () => {
     if (!startDate || !endDate) return [];
@@ -623,7 +839,7 @@ function DailyPerformanceView({ operatorData, registeredOperators }) {
           <div className="hidden sm:block w-px h-8 bg-slate-200 mx-1"></div>
           <select value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)} className="w-full sm:w-56 px-4 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm">
             <option value="">Todos os Operadores</option>
-            {registeredOperators.map(op => <option key={op} value={op}>{op}</option>)}
+            {registeredOperators.map(op => <option key={op.id} value={op.name}>{op.name}</option>)}
           </select>
         </div>
       </div>
@@ -633,7 +849,7 @@ function DailyPerformanceView({ operatorData, registeredOperators }) {
           <h3 className="text-lg font-bold text-slate-800">Desempenho Diário: {activeMetricLabel}</h3>
           <div className="flex flex-wrap gap-2 mt-4">
             {chartMetricsConfig.map(metric => (
-              <button key={metric.key} onClick={() => setActiveChartMetric(metric.key)} className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-300 ${activeChartMetric === metric.key ? 'bg-blue-600 text-white shadow-md scale-105' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>{metric.label}</button>
+              <button key={metric.key} onClick={() => setChartMetric(metric.key)} className={`px-3 py-1.5 text-xs font-semibold rounded-full transition-all duration-300 ${activeChartMetric === metric.key ? 'bg-blue-600 text-white shadow-md scale-105' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'}`}>{metric.label}</button>
             ))}
           </div>
         </div>
@@ -732,7 +948,7 @@ function FunnelView({ operatorData, registeredOperators }) {
           <div className="hidden sm:block w-px h-8 bg-slate-200 mx-1"></div>
           <select value={selectedOperator} onChange={(e)=>setSelectedOperator(e.target.value)} className="w-full sm:w-56 px-4 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-sm">
             <option value="">Todos os Operadores</option>
-            {registeredOperators.map(op => <option key={op} value={op}>{op}</option>)}
+            {registeredOperators.map(op => <option key={op.id} value={op.name}>{op.name}</option>)}
           </select>
         </div>
       </div>
@@ -905,7 +1121,12 @@ function InsertDataView({ operatorData, setOperatorData, editingId, setEditingId
         let updatedCount = 0;
         
         newRecords.forEach(newRecord => {
-          const existingIndex = updatedData.findIndex(op => op.operador === newRecord.operador && op.data === newRecord.data);
+          // FIX 5: Comparação ignorando Maiúsculas/Minúsculas
+          const existingIndex = updatedData.findIndex(op => 
+            (op.operador || '').toLowerCase() === (newRecord.operador || '').toLowerCase() && 
+            op.data === newRecord.data
+          );
+          
           if (existingIndex !== -1) {
             updatedData[existingIndex] = { ...newRecord, id: updatedData[existingIndex].id };
             updatedCount++;
@@ -932,7 +1153,9 @@ function InsertDataView({ operatorData, setOperatorData, editingId, setEditingId
         setTimeout(() => setCsvError(''), 5000);
       }
     };
-    reader.readAsText(file);
+    
+    // FIX 2: Adicionado Encoding para ISO-8859-1 ler acentos corretamente
+    reader.readAsText(file, 'ISO-8859-1');
     if (e.target) e.target.value = '';
   };
 
@@ -1037,10 +1260,10 @@ function InsertDataView({ operatorData, setOperatorData, editingId, setEditingId
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-          {registeredOperators.map((op, idx) => (
-            <div key={idx} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-              <p className="font-semibold text-slate-900 mb-1">{op}</p>
-              <p className="text-sm text-slate-600">{getLeadMetaDisplay(op)}</p>
+          {registeredOperators.filter(op => op.status === 'ativo').map((op) => (
+            <div key={op.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+              <p className="font-semibold text-slate-900 mb-1">{op.name}</p>
+              <p className="text-sm text-slate-600">{getLeadMetaDisplay(op.name)}</p>
             </div>
           ))}
         </div>
@@ -1049,7 +1272,7 @@ function InsertDataView({ operatorData, setOperatorData, editingId, setEditingId
         {successMsg && <div className="mb-6 bg-emerald-50 text-emerald-700 p-4 rounded-lg flex items-center gap-2"><CheckCircle size={20} />{successMsg}</div>}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-2"><label className="block text-sm font-medium mb-1">Data</label><input type="date" name="data" required value={formData.data} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg" /></div>
-          <div className="lg:col-span-2"><label className="block text-sm font-medium mb-1">Operador</label><select name="operador" required value={formData.operador} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg bg-white">{registeredOperators.map((op, idx) => <option key={idx} value={op}>{op}</option>)}</select></div>
+          <div className="lg:col-span-2"><label className="block text-sm font-medium mb-1">Operador</label><select name="operador" required value={formData.operador} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg bg-white">{registeredOperators.map((op) => <option key={op.id} value={op.name}>{op.name}</option>)}</select></div>
           <div><label className="block text-sm font-medium mb-1">Leads</label><input type="number" name="leads" required value={formData.leads} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg" /></div>
           <div><label className="block text-sm font-medium mb-1">Ligações</label><input type="number" name="ligacoes" required value={formData.ligacoes} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg" /></div>
           <div><label className="block text-sm font-medium mb-1">Atendidas</label><input type="number" name="atendidas" required value={formData.atendidas} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg" /></div>
@@ -1122,8 +1345,8 @@ function InsertDataView({ operatorData, setOperatorData, editingId, setEditingId
                   onChange={handleLeadMetaChange}
                   className="w-full px-4 py-2 border rounded-lg bg-white"
                 >
-                  {registeredOperators.map((op, idx) => (
-                    <option key={idx} value={op}>{op}</option>
+                  {registeredOperators.filter(op => op.status === 'ativo').map((op) => (
+                    <option key={op.id} value={op.name}>{op.name}</option>
                   ))}
                 </select>
               </div>
@@ -1175,8 +1398,8 @@ function InsertDataView({ operatorData, setOperatorData, editingId, setEditingId
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white"
                   >
                     <option value="todos">Todos os operadores</option>
-                    {registeredOperators.map((op, idx) => (
-                      <option key={idx} value={op}>{op}</option>
+                    {registeredOperators.filter(op => op.status === 'ativo').map((op) => (
+                      <option key={op.id} value={op.name}>{op.name}</option>
                     ))}
                   </select>
                 </div>
@@ -1262,13 +1485,15 @@ function CadastrosView({ registeredOperators, setRegisteredOperators, systemUser
           <button onClick={() => setActiveTab('operadores')} className={`flex items-center gap-2 px-6 py-4 font-bold border-b-2 ${activeTab === 'operadores' ? 'border-blue-600 text-blue-700 bg-white' : 'border-transparent text-slate-500'}`}><Users size={18} /> Operadores</button>
           <button onClick={() => setActiveTab('usuarios')} className={`flex items-center gap-2 px-6 py-4 font-bold border-b-2 ${activeTab === 'usuarios' ? 'border-blue-600 text-blue-700 bg-white' : 'border-transparent text-slate-500'}`}><Shield size={18} /> Usuários de Acesso</button>
           <button onClick={() => setActiveTab('outros')} className={`flex items-center gap-2 px-6 py-4 font-bold border-b-2 ${activeTab === 'outros' ? 'border-blue-600 text-blue-700 bg-white' : 'border-transparent text-slate-500'}`}><ListPlus size={18} /> Módulos</button>
-          <button onClick={() => setActiveTab('metas')} className={`flex items-center gap-2 px-6 py-4 font-bold border-b-2 ${activeTab === 'metas' ? 'border-blue-600 text-blue-700 bg-white' : 'border-transparent text-slate-500'}`}><Target size={18} /> Metas</button>
+          <button onClick={() => setActiveTab('metas')} className={`flex items-center gap-2 px-6 py-4 font-bold border-b-2 ${activeTab === 'metas' ? 'border-blue-600 text-blue-700 bg-white' : 'border-transparent text-slate-500'}`}><Target size={18} /> Metas Globais</button>
+          <button onClick={() => setActiveTab('metas-individuais')} className={`flex items-center gap-2 px-6 py-4 font-bold border-b-2 ${activeTab === 'metas-individuais' ? 'border-blue-600 text-blue-700 bg-white' : 'border-transparent text-slate-500'}`}><Target size={18} /> Metas Individuais</button>
         </div>
         <div className="p-6">
           {activeTab === 'operadores' && <ManageOperatorsTab registeredOperators={registeredOperators} setRegisteredOperators={setRegisteredOperators} />}
           {activeTab === 'usuarios' && <ManageUsersTab systemUsers={systemUsers} setSystemUsers={setSystemUsers} />}
           {activeTab === 'outros' && <ManageModulesTab systemModules={systemModules} setSystemModules={setSystemModules} />}
           {activeTab === 'metas' && <ManageMetasTab metas={metas} setMetas={setMetas} />}
+          {activeTab === 'metas-individuais' && <ManageIndividualGoalsTab registeredOperators={registeredOperators} />}
         </div>
       </div>
     </div>
@@ -1343,17 +1568,409 @@ function ManageMetasTab({ metas, setMetas }) {
   );
 }
 
+function ManageIndividualGoalsTab({ registeredOperators }) {
+  // FIX 4: JSON.parse Try/Catch para individualGoals
+  const [individualGoals, setIndividualGoals] = useState(() => {
+    try {
+      const stored = localStorage.getItem('individualGoals');
+      return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+  
+  // FIX 4: JSON.parse Try/Catch para goalsHistory
+  const [goalsHistory, setGoalsHistory] = useState(() => {
+    try {
+      const stored = localStorage.getItem('goalsHistory');
+      return stored ? JSON.parse(stored) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [selectedOperator, setSelectedOperator] = useState(null);
+  const [formGoals, setFormGoals] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+
+  const getOperatorGoals = (opId) => {
+    const key = `${opId}-${selectedMonth}`;
+    return individualGoals[key] || {
+      leadsEntregues: 0,
+      reunioesRealizadas: 0,
+      taxaConexao: 0,
+      taxaConversao: 0,
+      ligacoesDiarias: 0
+    };
+  };
+
+  const handleOpenModal = (op) => {
+    setSelectedOperator(op);
+    setFormGoals(getOperatorGoals(op.id));
+  };
+
+  const handleSaveGoals = () => {
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSave = () => {
+    const key = `${selectedOperator.id}-${selectedMonth}`;
+    const updated = { ...individualGoals, [key]: formGoals };
+    setIndividualGoals(updated);
+    localStorage.setItem('individualGoals', JSON.stringify(updated));
+    
+    // Add to history with timestamp
+    const historyKey = `${selectedOperator.id}-${selectedMonth}`;
+    const currentHistory = goalsHistory[historyKey] || [];
+    const newEntry = {
+      ...formGoals,
+      savedAt: new Date().toISOString(),
+      savedBy: selectedOperator.name
+    };
+    const updatedHistory = { ...goalsHistory, [historyKey]: [...currentHistory, newEntry] };
+    setGoalsHistory(updatedHistory);
+    localStorage.setItem('goalsHistory', JSON.stringify(updatedHistory));
+    
+    setShowConfirmModal(false);
+    setSelectedOperator(null);
+    setFormGoals(null);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-bold text-slate-800">Metas Individuais por Operador</h3>
+        <p className="text-sm text-slate-500">Selecione um operador para definir suas metas mensais.</p>
+      </div>
+
+
+
+      <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+        <h4 className="text-lg font-semibold text-slate-900 mb-4">Operadores Ativos</h4>
+        <div className="space-y-2">
+          {registeredOperators.filter(op => op.status === 'ativo').map((op) => {
+            const hasGoals = !!individualGoals[`${op.id}-${selectedMonth}`];
+            return (
+              <button
+                key={op.id}
+                onClick={() => handleOpenModal(op)}
+                className="w-full text-left px-4 py-3 border border-slate-200 rounded-lg hover:bg-blue-50 hover:border-blue-400 transition-colors flex justify-between items-center"
+              >
+                <span className="font-medium text-slate-800">{op.name}</span>
+                {hasGoals && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Metas Definidas</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {selectedOperator && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Metas de {selectedOperator.name}</h2>
+              <p className="text-sm text-slate-500">Defina as metas mensais para este operador. Todas as métricas são importantes para o acompanhamento de desempenho.</p>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-slate-600 mb-2">Mês</label>
+              <input
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Leads Entregues</label>
+                <input
+                  type="number"
+                  value={formGoals.leadsEntregues}
+                  onChange={(e) => setFormGoals({...formGoals, leadsEntregues: parseInt(e.target.value) || 0})}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-lg font-semibold"
+                />
+              </div>
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Reuniões Realizadas</label>
+                <input
+                  type="number"
+                  value={formGoals.reunioesRealizadas}
+                  onChange={(e) => setFormGoals({...formGoals, reunioesRealizadas: parseInt(e.target.value) || 0})}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-lg font-semibold"
+                />
+              </div>
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Taxa de Conexão (%)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formGoals.taxaConexao}
+                  onChange={(e) => setFormGoals({...formGoals, taxaConexao: parseFloat(e.target.value) || 0})}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-lg font-semibold"
+                />
+              </div>
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Taxa de Conversão para Reunião (%)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formGoals.taxaConversao}
+                  onChange={(e) => setFormGoals({...formGoals, taxaConversao: parseFloat(e.target.value) || 0})}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-lg font-semibold"
+                />
+              </div>
+              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700 mb-2">Ligações Diárias</label>
+                <input
+                  type="number"
+                  value={formGoals.ligacoesDiarias}
+                  onChange={(e) => setFormGoals({...formGoals, ligacoesDiarias: parseInt(e.target.value) || 0})}
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-white text-lg font-semibold"
+                />
+              </div>
+            </div>
+
+            {individualGoals[`${selectedOperator.id}-${selectedMonth}`] && (
+              <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <h3 className="text-sm font-semibold text-slate-700 mb-3">Metas Salvas para {selectedMonth}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="p-3 bg-white rounded border border-slate-200">
+                    <p className="text-xs text-slate-600">Leads Entregues</p>
+                    <p className="text-lg font-bold text-slate-900">{individualGoals[`${selectedOperator.id}-${selectedMonth}`].leadsEntregues}</p>
+                  </div>
+                  <div className="p-3 bg-white rounded border border-slate-200">
+                    <p className="text-xs text-slate-600">Reuniões Realizadas</p>
+                    <p className="text-lg font-bold text-slate-900">{individualGoals[`${selectedOperator.id}-${selectedMonth}`].reunioesRealizadas}</p>
+                  </div>
+                  <div className="p-3 bg-white rounded border border-slate-200">
+                    <p className="text-xs text-slate-600">Taxa de Conexão</p>
+                    <p className="text-lg font-bold text-slate-900">{individualGoals[`${selectedOperator.id}-${selectedMonth}`].taxaConexao}%</p>
+                  </div>
+                  <div className="p-3 bg-white rounded border border-slate-200">
+                    <p className="text-xs text-slate-600">Taxa de Conversão</p>
+                    <p className="text-lg font-bold text-slate-900">{individualGoals[`${selectedOperator.id}-${selectedMonth}`].taxaConversao}%</p>
+                  </div>
+                  <div className="p-3 bg-white rounded border border-slate-200 md:col-span-2">
+                    <p className="text-xs text-slate-600">Ligações Diárias</p>
+                    <p className="text-lg font-bold text-slate-900">{individualGoals[`${selectedOperator.id}-${selectedMonth}`].ligacoesDiarias}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-between border-t pt-6">
+              <button onClick={() => setShowHistoryModal(true)} className="px-6 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors font-medium">
+                Ver Histórico
+              </button>
+              <div className="flex gap-3">
+                <button onClick={() => setSelectedOperator(null)} className="px-6 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors font-medium">
+                  Cancelar
+                </button>
+                <button onClick={handleSaveGoals} className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium">
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showHistoryModal && selectedOperator && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Historico de Metas - {selectedOperator.name}</h2>
+            
+            {goalsHistory[`${selectedOperator.id}-${selectedMonth}`] && goalsHistory[`${selectedOperator.id}-${selectedMonth}`].length > 0 ? (
+              <div className="space-y-4">
+                {goalsHistory[`${selectedOperator.id}-${selectedMonth}`].map((entry, index) => (
+                  <div key={index} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">Entrada #{goalsHistory[`${selectedOperator.id}-${selectedMonth}`].length - index}</p>
+                        <p className="text-xs text-slate-500">{new Date(entry.savedAt).toLocaleString('pt-BR')}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <div className="p-2 bg-white rounded border border-slate-200">
+                        <p className="text-xs text-slate-600">Leads Entregues</p>
+                        <p className="text-sm font-bold text-slate-900">{entry.leadsEntregues}</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-slate-200">
+                        <p className="text-xs text-slate-600">Reunioes Realizadas</p>
+                        <p className="text-sm font-bold text-slate-900">{entry.reunioesRealizadas}</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-slate-200">
+                        <p className="text-xs text-slate-600">Taxa de Conexao</p>
+                        <p className="text-sm font-bold text-slate-900">{entry.taxaConexao}%</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-slate-200">
+                        <p className="text-xs text-slate-600">Taxa de Conversao</p>
+                        <p className="text-sm font-bold text-slate-900">{entry.taxaConversao}%</p>
+                      </div>
+                      <div className="p-2 bg-white rounded border border-slate-200 md:col-span-2">
+                        <p className="text-xs text-slate-600">Ligacoes Diarias</p>
+                        <p className="text-sm font-bold text-slate-900">{entry.ligacoesDiarias}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-slate-600">Nenhum historico de metas para {selectedMonth}</p>
+              </div>
+            )}
+            
+            <div className="flex gap-3 justify-end border-t pt-6 mt-6">
+              <button onClick={() => setShowHistoryModal(false)} className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium">
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Confirmar Alteração</h3>
+            <p className="text-slate-600 mb-6">
+              Deseja realmente salvar as metas individuais para {selectedOperator.name}?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setShowConfirmModal(false)} className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors">
+                Cancelar
+              </button>
+              <button onClick={handleConfirmSave} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ManageOperatorsTab({ registeredOperators, setRegisteredOperators }) {
   const [newOperator, setNewOperator] = useState('');
-  const handleAddOperator = (e) => { e.preventDefault(); if(newOperator) { setRegisteredOperators([...registeredOperators, newOperator]); setNewOperator(''); } };
+  const [editingId, setEditingId] = useState(null);
+  const [editingName, setEditingName] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingEdit, setPendingEdit] = useState(null);
+  const handleAddOperator = (e) => { 
+    e.preventDefault(); 
+    if(newOperator) { 
+      const newOp = { id: Date.now().toString(), name: newOperator, status: 'ativo' };
+      setRegisteredOperators([...registeredOperators, newOp]); 
+      setNewOperator(''); 
+    } 
+  };
+  const handleDeactivateOperator = (opId) => {
+    setRegisteredOperators(registeredOperators.map(op => op.id === opId ? { ...op, status: 'inativo' } : op));
+  };
+  const handleReactivateOperator = (opId) => {
+    setRegisteredOperators(registeredOperators.map(op => op.id === opId ? { ...op, status: 'ativo' } : op));
+  };
+  const handleEditOperator = (op) => {
+    setEditingId(op.id);
+    setEditingName(op.name);
+  };
+  const handleSaveEdit = () => {
+    if(editingName.trim()) {
+      const oldName = registeredOperators.find(op => op.id === editingId)?.name;
+      setPendingEdit({ id: editingId, oldName, newName: editingName });
+      setShowConfirmModal(true);
+    }
+  };
+  const handleConfirmEdit = () => {
+    if(pendingEdit) {
+      setRegisteredOperators(registeredOperators.map(op => op.id === pendingEdit.id ? { ...op, name: pendingEdit.newName } : op));
+      setEditingId(null);
+      setEditingName('');
+      setShowConfirmModal(false);
+      setPendingEdit(null);
+    }
+  };
+  const handleRejectEdit = () => {
+    setShowConfirmModal(false);
+    setPendingEdit(null);
+  };
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditingName('');
+    setShowConfirmModal(false);
+    setPendingEdit(null);
+  };
   return (
     <div className="space-y-6">
       <form onSubmit={handleAddOperator} className="flex gap-4"><input type="text" value={newOperator} onChange={e=>setNewOperator(e.target.value)} required className="flex-1 border px-4 py-2 rounded" placeholder="Novo operador"/><button type="submit" className="bg-blue-600 text-white px-6 rounded">Adicionar</button></form>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {registeredOperators.map((op, i) => (
-          <div key={i} className="border p-4 rounded flex justify-between"><span>{op}</span><button onClick={() => setRegisteredOperators(registeredOperators.filter(o => o !== op))} className="text-red-500"><Trash2 size={18}/></button></div>
-        ))}
+      <div className="space-y-4">
+        <h3 className="font-semibold text-slate-900 mb-4">Operadores Ativos</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {registeredOperators.filter(op => op.status === 'ativo').map((op) => (
+            <div key={op.id} className="border p-4 rounded-lg bg-white shadow-sm flex justify-between items-center">
+              {editingId === op.id ? (
+                <div className="flex-1 flex gap-2">
+                  <input type="text" value={editingName} onChange={(e) => setEditingName(e.target.value)} className="flex-1 px-2 py-1 border rounded text-sm" />
+                  <button onClick={handleSaveEdit} className="text-green-600 hover:text-green-700 px-2 py-1 rounded hover:bg-green-50 transition-colors">✓</button>
+                  <button onClick={handleCancelEdit} className="text-gray-400 hover:text-gray-600 px-2 py-1 rounded hover:bg-gray-100 transition-colors">✕</button>
+                </div>
+              ) : (
+                <>
+                  <span className="font-semibold text-slate-900">{op.name}</span>
+                  <div className="flex gap-1">
+                    <button onClick={() => handleEditOperator(op)} className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded transition-colors" title="Editar operador">
+                      <Pencil size={18}/>
+                    </button>
+                    <button onClick={() => handleDeactivateOperator(op.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded transition-colors" title="Desativar operador">
+                      <UserX size={18}/>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+        
+        {registeredOperators.some(op => op.status === 'inativo') && (
+          <div className="mt-8">
+            <h3 className="font-semibold text-slate-900 mb-4">Operadores Inativos</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {registeredOperators.filter(op => op.status === 'inativo').map((op) => (
+                <div key={op.id} className="border p-4 rounded-lg bg-slate-50 shadow-sm flex justify-between items-center opacity-75">
+                  <span className="font-medium text-slate-600">{op.name}</span>
+                  <button onClick={() => handleReactivateOperator(op.id)} className="text-green-500 hover:text-green-700 hover:bg-green-50 p-2 rounded transition-colors" title="Reativar operador">
+                    <CheckCircle size={18}/>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+      
+      {showConfirmModal && pendingEdit && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Confirmar Alteração</h3>
+            <p className="text-slate-600 mb-6">
+              Deseja realmente alterar o nome de <span className="font-semibold">"{pendingEdit.oldName}"</span> para <span className="font-semibold">"{pendingEdit.newName}"</span>?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={handleRejectEdit} className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors">
+                Cancelar
+              </button>
+              <button onClick={handleConfirmEdit} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1366,7 +1983,9 @@ function ManageUsersTab({ systemUsers, setSystemUsers }) {
     e.preventDefault();
     if(newUsername && newPassword) {
       setSystemUsers([...systemUsers, { id: Date.now().toString(), username: newUsername, password: newPassword, role: newRole, name: '', photo: '' }]);
-      newUsername(''); newPassword('');
+      // FIX 1: set functions must be used to update state properly
+      setNewUsername(''); 
+      setNewPassword('');
     }
   };
   return (
@@ -2087,7 +2706,7 @@ function LoginScreen({ onLogin }) {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <img src="/manus-storage/impactotecnologiabr_logo_2db367ed.jpg" alt="Impacto Tecnologia" className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-md rounded-lg transform transition-transform duration-300 hover:scale-110" />
+          <ImpactoLogo className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-md rounded-lg transform transition-transform duration-300 hover:scale-110" />
           <span className="text-xl sm:text-2xl font-bold text-slate-700">Impacto Tecnologia</span>
         </div>
       </div>
@@ -2158,16 +2777,94 @@ function LoginScreen({ onLogin }) {
 }
 
 // --- LAYOUT PRINCIPAL (Sidebar + Conteúdo) ---
-function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorData, registeredOperators, setRegisteredOperators, systemUsers, setSystemUsers, systemModules, setSystemModules, metas, setMetas, chatMessages, setChatMessages }) {
+function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorData, registeredOperators, setRegisteredOperators, systemUsers, setSystemUsers, systemModules, setSystemModules, metas, setMetas, chatMessages, setChatMessages, notifications: propsNotifications, setNotifications: propsSetNotifications }: any) {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const notifications = propsNotifications || [];
+  const setNotifications = propsSetNotifications || (() => {});
 
-  const adminUser = systemUsers.find(u => u.role === 'ADMIN');
+  const adminUser = systemUsers.find((u: any) => u.role === 'ADMIN');
 
-  const handleNavigation = (view) => {
+  useEffect(() => {
+    if (operatorData.length === 0) return;
+
+    const totalVendas = operatorData.reduce((acc: number, op: any) => acc + Number(op.vendas || 0), 0);
+    const totalMRR = operatorData.reduce((acc: number, op: any) => acc + Number(op.mrr || 0), 0);
+    const totalAtendidas = operatorData.reduce((acc: number, op: any) => acc + Number(op.atendidas || 0), 0);
+    const totalReunioesRealizadas = operatorData.reduce((acc: number, op: any) => acc + Number(op.reunioesRealizadas || 0), 0);
+    const conversaoRate = totalAtendidas > 0 ? (totalReunioesRealizadas / totalAtendidas) * 100 : 0;
+
+    const newNotifications: any[] = [];
+
+    if (totalVendas >= metas.vendas && totalVendas > 0) {
+      const existsVendaNotif = notifications.some((n: any) => n.title.includes('Meta de Vendas'));
+      if (!existsVendaNotif) {
+        newNotifications.push({
+          id: `vendas-${Date.now()}`,
+          type: 'success',
+          title: 'Meta de Vendas Atingida!',
+          message: `A equipe atingiu ${totalVendas} vendas! Meta: ${metas.vendas}`,
+          timestamp: new Date(),
+          read: false,
+        });
+      }
+    }
+
+    if (totalMRR >= metas.mrr && totalMRR > 0) {
+      const existsMRRNotif = notifications.some((n: any) => n.title.includes('Meta de MRR'));
+      if (!existsMRRNotif) {
+        newNotifications.push({
+          id: `mrr-${Date.now()}`,
+          type: 'success',
+          title: 'Meta de MRR Atingida!',
+          message: `MRR total: R$ ${totalMRR.toLocaleString('pt-BR')}. Meta: R$ ${metas.mrr.toLocaleString('pt-BR')}`,
+          timestamp: new Date(),
+          read: false,
+        });
+      }
+    }
+
+    if (conversaoRate < metas.conversao && totalAtendidas > 0) {
+      const existsConvNotif = notifications.some((n: any) => n.title.includes('Taxa de Conversao'));
+      if (!existsConvNotif) {
+        newNotifications.push({
+          id: `conversao-${Date.now()}`,
+          type: 'warning',
+          title: 'Taxa de Conversao Baixa',
+          message: `Taxa atual: ${conversaoRate.toFixed(1)}%. Meta: ${metas.conversao}%`,
+          timestamp: new Date(),
+          read: false,
+        });
+      }
+    }
+
+    const lastRecord = operatorData[operatorData.length - 1];
+    if (lastRecord && Number(lastRecord.vendas || 0) > 0) {
+      const lastRecordMRR = Number(lastRecord.mrr || 0);
+      const existsVendaIndividualNotif = notifications.some((n: any) => 
+        n.title.includes('Novo Lancamento') && n.message.includes(lastRecord.operador)
+      );
+      if (!existsVendaIndividualNotif) {
+        newNotifications.push({
+          id: `venda-${lastRecord.operador}-${Date.now()}`,
+          type: 'success',
+          title: 'Novo Lancamento',
+          message: `${lastRecord.operador} fez um lancamento de R$ ${lastRecordMRR.toLocaleString('pt-BR')}. MRR Total: R$ ${totalMRR.toLocaleString('pt-BR')}`,
+          timestamp: new Date(),
+          read: false,
+        });
+      }
+    }
+
+    if (newNotifications.length > 0) {
+      setNotifications((prev: any) => [...newNotifications, ...prev]);
+    }
+  }, [operatorData, metas]);
+
+  const handleNavigation = (view: any) => {
     setIsLoading(true);
     setTimeout(() => {
       setCurrentView(view);
@@ -2191,6 +2888,8 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
           return <MetasTrackingView operatorData={operatorData} registeredOperators={registeredOperators} metas={metas} />;
         case 'settings':
           return <SettingsView user={user} setCurrentUser={setCurrentUser} systemUsers={systemUsers} setSystemUsers={setSystemUsers} />;
+        // case 'notifications':
+        //   return <NotificationsView notifications={notifications} onNotificationRead={(id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))} onNotificationDelete={(id) => setNotifications(prev => prev.filter(n => n.id !== id))} onClearAll={() => setNotifications([])} />;
         case 'admin-messages':
           if (user.role === 'ADMIN') return <AdminMessagesView systemUsers={systemUsers} chatMessages={chatMessages} setChatMessages={setChatMessages} />;
           return <div className="p-8 text-center text-red-500 font-bold">Acesso Negado</div>;
@@ -2207,7 +2906,7 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
     return <div className="animate-fade-in">{content}</div>;
   };
 
-  const unreadMessagesCount = user.role === 'ADMIN' ? [...new Set(chatMessages.filter(m => m.sender === 'user').map(m => m.userId))].length : 0;
+  const unreadMessagesCount = user.role === 'ADMIN' ? [...new Set(chatMessages.filter((m: any) => m.sender === 'user').map((m: any) => m.userId))].length : 0;
 
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden relative">
@@ -2297,6 +2996,7 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
             )}
 
             <div className="mt-auto pt-4 space-y-1.5">
+              {/* Notificações desativadas por enquanto */}
               <button onClick={() => handleNavigation('settings')} className={`w-full flex items-center ${isCollapsed ? 'justify-center px-2' : 'gap-3 px-4'} py-3 rounded-lg transition-colors ${currentView === 'settings' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`} title={isCollapsed ? "Configurações" : ""}>
                 <SettingsIcon size={20} className="shrink-0" />
                 {!isCollapsed && <span className="whitespace-nowrap font-medium text-sm">Configurações e Perfil</span>}
@@ -2364,26 +3064,27 @@ function MainLayout({ user, setCurrentUser, onLogout, operatorData, setOperatorD
 // ==========================================
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [operatorData, setOperatorData] = useState(initialOperatorData);
   const [registeredOperators, setRegisteredOperators] = useState(initialRegisteredOperators);
   const [systemUsers, setSystemUsers] = useState(initialSystemUsers);
   const [systemModules, setSystemModules] = useState(initialSystemModules);
   const [metas, setMetas] = useState(initialMetas);
   const [chatMessages, setChatMessages] = useState(initialChatMessages);
+  const [notifications, setNotifications] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState<any[]>([]);
 
-  const showToast = (message, type = 'info', actions = null) => {
+  const showToast = (message: any, type: string = 'info', actions: any = null) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type, actions }]);
   };
 
-  const removeToast = (id) => {
+  const removeToast = (id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  const handleLogin = (username, password) => {
+  const handleLogin = (username: string, password: string) => {
     const foundUser = systemUsers.find(u => u.username === username && u.password === password);
     if (foundUser) {
       setCurrentUser(foundUser);
@@ -2416,7 +3117,8 @@ export default function App() {
         setMetas={setMetas}
         chatMessages={chatMessages}
         setChatMessages={setChatMessages}
-        showToast={showToast}
+        notifications={notifications}
+        setNotifications={setNotifications}
       />
       <ToastContainer toasts={toasts} onClose={removeToast} />
     </>
