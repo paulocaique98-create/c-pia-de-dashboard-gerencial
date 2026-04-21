@@ -14,6 +14,7 @@
 - [x] Criar testes para validar persistência de sessão (6 testes passando)
 - [x] Corrigir scroll indesejado no menu ADM em notebooks de 14 polegadas
 - [x] Adicionar animações de transição suaves ao expandir e recolher o menu
+- [x] Otimizar responsividade do menu lateral para dispositivos móveis
 
 ## Features (Inherited from Source)
 - [x] CRM/SDR dashboard com interface de login

@@ -302,3 +302,51 @@
   .menu-text-transition {
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+
+  /* Mobile Touch Optimization */
+  @media (max-width: 1024px) {
+    /* Increase touch target size on mobile */
+    button[role="menuitem"] {
+      min-height: 44px;
+    }
+
+    /* Optimize scrolling performance */
+    .custom-scrollbar {
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Reduce motion on mobile for better performance */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  }
+
+  /* Optimize for small screens */
+  @media (max-width: 640px) {
+    aside {
+      max-width: 100vw;
+    }
+
+    button[role="menuitem"] {
+      min-height: 48px;
+    }
+
+    /* Prevent text overflow on very small screens */
+    span {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  }
+
+  /* High DPI screens optimization */
+  @media (-webkit-min-device-pixel-ratio: 2) {
+    .menu-icon-transition {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
