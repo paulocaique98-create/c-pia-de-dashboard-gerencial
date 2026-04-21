@@ -1,0 +1,73 @@
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  openId VARCHAR(64) NOT NULL UNIQUE,
+  name TEXT,
+  email VARCHAR(320),
+  loginMethod VARCHAR(64),
+  role VARCHAR(50) DEFAULT 'user' NOT NULL CHECK (role IN ('user', 'admin')),
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  lastSignedIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS operatorData (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  userId BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  data DATE NOT NULL,
+  operador VARCHAR(255) NOT NULL,
+  leads INT DEFAULT 0 NOT NULL,
+  ligacoes INT DEFAULT 0 NOT NULL,
+  atendidas INT DEFAULT 0 NOT NULL,
+  reunioesAgendadas INT DEFAULT 0 NOT NULL,
+  reunioesRealizadas INT DEFAULT 0 NOT NULL,
+  vendas INT DEFAULT 0 NOT NULL,
+  noShow INT DEFAULT 0 NOT NULL,
+  mrr NUMERIC(10, 2) DEFAULT 0.00 NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS chatMessages (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  userId BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  sender VARCHAR(50) NOT NULL,
+  text TEXT NOT NULL,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS operators (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS modules (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_operatorData_userId ON operatorData(userId);
+CREATE INDEX IF NOT EXISTS idx_operatorData_data ON operatorData(data);
+CREATE INDEX IF NOT EXISTS idx_chatMessages_userId ON chatMessages(userId);
+CREATE INDEX IF NOT EXISTS idx_chatMessages_timestamp ON chatMessages(timestamp);
+CREATE INDEX IF NOT EXISTS idx_users_openId ON users(openId);
+
+INSERT INTO operators (name) VALUES
+  ('Paulo Santana'),
+  ('Jessica França'),
+  ('Rafael Lima'),
+  ('Natanael Barcelos'),
+  ('André Moraes')
+ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO modules (name) VALUES
+  ('Dashboard'),
+  ('Desempenho Diário'),
+  ('Funil de Vendas'),
+  ('Gestão de Operadores'),
+  ('Gestão de Usuários'),
+  ('Gestão de Módulos'),
+  ('Chat de Suporte'),
+  ('Perfil de Usuário')
+ON CONFLICT (name) DO NOTHING;
